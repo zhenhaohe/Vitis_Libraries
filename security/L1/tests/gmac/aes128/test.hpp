@@ -19,7 +19,7 @@
 #include <ap_int.h>
 #include "hls_stream.h"
 
-void test(hls::stream<ap_uint<128> >& dataStrm,
+void aes128GmacTop(hls::stream<ap_uint<128> >& dataStrm,
           hls::stream<ap_uint<64> >& lenDataStrm,
           hls::stream<ap_uint<128> >& cipherkeyStrm,
           hls::stream<ap_uint<96> >& IVStrm,

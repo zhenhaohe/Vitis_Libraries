@@ -27,7 +27,7 @@ open_project -reset $PROJ
 
 add_files "test.cpp" -cflags "-I${XF_PROJ_ROOT}/L1/include -D_XF_SECURITY_GMAC_DEBUG_=1"
 add_files -tb "main.cpp"
-set_top test
+set_top aes128GmacTop
 
 open_solution -reset $SOLN
 

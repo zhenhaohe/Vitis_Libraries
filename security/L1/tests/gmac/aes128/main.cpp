@@ -33,7 +33,7 @@ using namespace std;
 
 // number of times to perform the test in different text and length
 // XXX notice that the datain char array should be long enough
-#define NUM_TESTS 300
+#define NUM_TESTS 1
 // cipherkey size in byte
 #define KEY_SIZE 16
 // cipher block size in byte
@@ -73,7 +73,8 @@ int main() {
     std::cout << "**********************************************" << std::endl;
 
     // additional authenticated data
-    const unsigned char aad[] =
+    unsigned char aad[4096];
+    memset(aad, 1, 4096);
         /*
          {0xD6, 0x09, 0xB1, 0xF0, 0x56, 0x63, 0x7A, 0x0D,
          0x46, 0xDF, 0x99, 0x8D, 0x88, 0xE5, 0x22, 0x2A,
@@ -123,32 +124,32 @@ int main() {
  0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x00, 0x07};
  */
 
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz";
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz"
+        // "abcdefghijklmnopqrstuvwxyz";
 
     // cipher key
     const unsigned char key[] = /*
@@ -191,15 +192,15 @@ int main() {
     // generate golden
     for (unsigned int i = 0; i < NUM_TESTS; i++) {
         // length of the additional authenticated data
-        int aad_len = i % 256;
+        int aad_len = 4096; //i % 256;
         // int aad_len = 87;
         int unused;
 
         // output result buffer
         unsigned char tag[BLK_SIZE];
 
-        char din[300];
-        memcpy(din, aad + i, aad_len);
+        char din[4096];
+        memcpy(din, aad, aad_len);
 
         // call OpenSSL API to get the golden
         EVP_CIPHER_CTX* ctx;
@@ -214,7 +215,7 @@ int main() {
         /*
 cout << "tag_golden : " << printr((unsigned char*)tag, BLK_SIZE) << endl;
         */
-        tests.push_back(Test((const char*)aad + i, aad_len, (const char*)tag));
+        tests.push_back(Test((const char*)aad, aad_len, (const char*)tag));
     }
 
     unsigned int nerror = 0;
@@ -262,7 +263,7 @@ cout << "tag_golden : " << printr((unsigned char*)tag, BLK_SIZE) << endl;
         lenAADStrm.write((*singletest).length * 8);
 
         // call fpga module
-        test(AADStrm, lenAADStrm, cipherkeyStrm, IVStrm, tagStrm);
+        aes128GmacTop(AADStrm, lenAADStrm, cipherkeyStrm, IVStrm, tagStrm);
 
         // check result
         ap_uint<8 * BLK_SIZE> tag;

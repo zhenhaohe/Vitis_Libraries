@@ -230,7 +230,7 @@ setup: | check_part
 	@echo "----"
 
 HLS ?= vitis_hls
-runhls: setup | check_vivado check_vpp
+runhls: setup | check_vivado #check_vpp
 	$(HLS) -f run_hls.tcl;
 
 clean:

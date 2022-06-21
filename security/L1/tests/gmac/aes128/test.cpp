@@ -17,10 +17,19 @@
 #include "test.hpp"
 #include "xf_security/gmac.hpp"
 
-void test(hls::stream<ap_uint<128> >& dataStrm,
+void aes128GmacTop(hls::stream<ap_uint<128> >& dataStrm,
           hls::stream<ap_uint<64> >& lenDataStrm,
           hls::stream<ap_uint<128> >& cipherkeyStrm,
           hls::stream<ap_uint<96> >& IVStrm,
           hls::stream<ap_uint<128> >& tagStrm) {
+#if defined(__SYNTHESIS__)
+#pragma HLS INTERFACE axis register  port=dataStrm
+#pragma HLS INTERFACE axis register  port=lenDataStrm
+#pragma HLS INTERFACE axis register  port=cipherkeyStrm
+#pragma HLS INTERFACE axis register  port=IVStrm
+#pragma HLS INTERFACE axis register  port=tagStrm
+#pragma HLS INTERFACE ap_ctrl_none port=return
+#endif
+
     xf::security::aes128Gmac(dataStrm, lenDataStrm, cipherkeyStrm, IVStrm, tagStrm);
 }
